@@ -12,13 +12,13 @@ Es aconsejable instalar la extensión a través de [composer](http://getcomposer
 Sólo tiene que ejecutar el comando en la consola:
 
 ```bash
-php composer.phar require --prefer-dist gudezi/yii2-croppic "*"
+php composer.phar require --prefer-dist gudezi/yii2-croppic-widget "*"
 ```
 
 или добавьте
 
 ```json
-"gudezi/yii2-croppic": "*"
+"gudezi/yii2-croppic-widget": "*"
 ```
 
 en la sección `require` de su archivo composer.json.
@@ -132,7 +132,7 @@ public function actions()
          * Descargar imagen
          */
         'upload' => [
-            'class' => 'wise5lin\croppic\actions\UploadAction',
+            'class' => 'gudezi\croppic\actions\UploadAction',
             'tempPath' => '@frontend/web/img/temp',
             'tempUrl' => 'img/temp/',
             'validatorOptions' => [
@@ -150,7 +150,7 @@ public function actions()
          * recortar la imagen
          */
         'crop' => [
-            'class' => 'wise5lin\croppic\actions\CropAction',
+            'class' => 'gudezi\croppic\actions\CropAction',
             'path' => '@frontend/web/img/user/avatar',
             'url' => 'img/user/avatar/',
             // permiso RBAC
@@ -174,7 +174,7 @@ public function actions()
          * recortar la imagen
          */
         'crop' => [
-            'class' => 'wise5lin\croppic\actions\CropAction',
+            'class' => 'gudezi\croppic\actions\CropAction',
             'path' => '@frontend/web/img/user/avatar',
             'url' => 'img/user/avatar/',
             'modelAttribute' => 'avatar', // <--- ejemplo №1

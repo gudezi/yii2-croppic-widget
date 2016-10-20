@@ -1,5 +1,5 @@
 {
-    "name": "gudezi/yii2-croppic",
+    "name": "gudezi/yii2-croppic-widget",
     "description": "Croppic widget Yii2 Framework.",
     "type": "yii2-extension",
     "keywords": [
@@ -8,7 +8,7 @@
         "widget",
         "croppic"
     ],
-    "homepage": "https://github.com/gudezi/yii2-croppic",
+    "homepage": "https://github.com/gudezi/yii2-croppic-widget",
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -18,8 +18,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/gudezi/yii2-croppic/issues?state=open",
-        "source": "https://github.com/gudezi/yii2-croppic"
+        "issues": "https://github.com/gudezi/yii2-croppic-widget/issues?state=open",
+        "source": "https://github.com/gudezi/yii2-croppic-widget"
     },
     "require": {
         "yiisoft/yii2": "*",

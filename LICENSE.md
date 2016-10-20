@@ -15,7 +15,7 @@ en las siguientes condiciones:
    el aviso de copyright anterior, esta lista de condiciones
    y la siguiente renuncia en la documentación y / u otro
    materiales proporcionados con la distribución.
- * No se wise5lin alias, ni el nombre ni el nombre del desarrollador no puede
+ * No se gudezi alias, ni el nombre ni el nombre del desarrollador no puede
    Se utiliza para la publicidad de productos
    derivados de este software sin el permiso previo por escrito.
 
