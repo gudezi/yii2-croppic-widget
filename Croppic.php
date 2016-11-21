@@ -7,42 +7,21 @@ namespace gudezi\croppic;
  * @link   <gudezi@gmail.com>
  */
 
-use yii\base\Widget;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\base\InvalidConfigException;
+use yii\widgets\InputWidget;
 
-/**
- * 
- * Widget para Croppic - Plugin jQuery para cropping
- *
- * @see http://www.croppic.net/
- * @link https://github.com/sconsult/croppic
- *
- * USO:
- *
- * use gudezi\croppic\Croppic;
- *
- * <?= Croppic::widget([
- *    'options' => [
- *       'class' => 'croppic',
- *    ],
- *    'pluginOptions' => [
- *       'uploadUrl' => $model->urlUpload,
- *       'cropUrl' => $model->urlCrop,
- *       'modal' => false,
- *       'doubleZoomControls' => false,
- *       'enableMousescroll' => true,
- *       'loaderHtml' => '<div class="loader bubblingG">
- *          <span id="bubblingG_1"></span>
- *          <span id="bubblingG_2"></span>
- *          <span id="bubblingG_3"></span>
- *       </div> ',
- *    ],
- * ]) ?>
- */
-class Croppic extends Widget
+class Croppic extends InputWidget
 {
+    const SELECT_SINGLE = 1;
+    const CLICK_ACTIVATE = 1;
+    
+    /**
+     * @var string
+     */
+    public $idPrefix = 'ft_';
+
     /**
      * HTML atributos de etiqueta div.
      *
@@ -56,16 +35,17 @@ class Croppic extends Widget
      * @var array
      */
     public $pluginOptions = [];
-
+    
     /**
-     * @inheritdoc
-     */
+    * @inheritdoc
+    */
     public function init()
     {
         // Sino se establece 'id' widget.
         if (!isset($this->options['id'])) {
             // Utilice el ID autogenerado.
             $this->options['id'] = $this->getId();
+            $this->options['style'] = 'display:none;';
         }
         // Asignar el 'id' widget.
         $this->id = $this->options['id'];
@@ -78,17 +58,67 @@ class Croppic extends Widget
         if (!isset($this->pluginOptions['cropUrl']) || empty($this->pluginOptions['cropUrl'])) {
             throw new InvalidConfigException('Parámetro "cropUrl" no puede estar vacío');
         }
-
+        
+        $this->pluginOptions['onAfterRemoveCroppedImg'] = 'function(){ reloadimg(); }';
+        $this->pluginOptions['onBeforeImgUpload'] = 'function(){ openimg(); }';
+        $this->pluginOptions['onReset'] = 'function(){ reloadimg(); }';
+        $this->pluginOptions['onAfterImgCrop'] = 'function(){ saveurl(); }';
+        
+        /*$this->pluginOptions['onImgDrag'] = 'function(){ milert8(); }';
+        $this->pluginOptions['onImgZoom'] = 'function(){ milert8(); }';
+        $this->pluginOptions['onImgRotate'] = 'function(){ milert8(); }';
+        
+        $this->pluginOptions['onBeforeImgCrop'] = 'function(){ milert4(); }';
+        $this->pluginOptions['onBeforeRemoveCroppedImg'] = 'function(){ milert1(); }';
+        $this->pluginOptions['onAfterRemoveCroppedImg'] = 'function(){ milert1(); }';
+        $this->pluginOptions['onError'] = 'function(){ milert7(); }';*/
+        
         parent::init();
     }
-
+    
     /**
      * @inheritdoc
      */
     public function run()
     {
-        echo Html::tag('div', '', $this->options);
+        //echo Html::tag('input', '');
+        //echo Html::input('text', 'txtfotocrop', 'nombre', ['class' => 'form-control']);
+        $id=$this->id;
 
+        $nametext = $this->hasModel() ? Html::getInputName($this->model, $this->attribute) : $this->name;
+
+        $idtext = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->getId();
+
+        $this->pluginOptions['outputUrlId']=$id.'_hidurlid';
+        $this->pluginOptions['customUploadButtonId']=$id.'_openbutton';
+        
+        $attribute = $this->attribute;
+        $value=$this->model->$attribute;
+        $mipath='yiiBaseAdvanced/backend/web'; 
+        $loadimg='';
+
+        echo Html::Input('text', $nametext, $value, ['class' => 'form-control', 'id' => $idtext]);
+        echo Html::Input('hidden', $id.'_hidoldval', $value, ['class' => 'form-control', 'id' => $id.'_hidoldval']);
+        echo Html::Input('hidden', $id.'_hidurlid', $value, ['class' => 'form-control', 'id' => $id.'_hidurlid']);
+        
+        if($value!='')
+        {
+            echo '<div class="croppic" id="'.$id.'_loadimg" style="background-image: url(/'.$mipath.$value.');">';
+            echo '<div class="cropControls cropControlsUpload" id="'.$id.'_buttomimg" > <i class="cropControlUpload mibot" id="'.$id.'_openbutton"></i> </div>';
+            echo '</div>';
+        }
+        else
+        {
+            echo '<div class="croppic" id="'.$id.'_loadimg" style="background-image: url(/'.$loadimg.');">';
+            echo '<div class="cropControls cropControlsUpload" id="'.$id.'_buttomimg" > <i class="cropControlUpload mibot" id="'.$id.'_openbutton"></i> </div>';
+            echo '</div>';
+        }
+
+        //type, model, model attribute name, options
+        //echo Html::Input('text', $this->model, $name, ['class' => 'form-control']);
+        
+        echo Html::tag('div', '', $this->options);
+        
         $this->registerClientScript();
     }
 
@@ -101,8 +131,41 @@ class Croppic extends Widget
         CroppicAsset::register($view);
 
         $pluginOptions = Json::encode($this->pluginOptions);
-        $js = "var {$this->id} = new Croppic('{$this->id}', {$pluginOptions});";
 
+        $pluginOptions = str_replace('"function(){ reloadimg(); }"','function(){ reloadimg(); }',$pluginOptions);
+        $pluginOptions = str_replace('"function(){ openimg(); }"','function(){ openimg(); }',$pluginOptions);
+        $pluginOptions = str_replace('"function(){ saveurl(); }"','function(){ saveurl(); }',$pluginOptions);
+
+        $id = $this->id;
+        $idtext = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->getId();
+
+        //print_r($id);die;
+        $js = "var {$this->id} = new Croppic('{$this->id}', {$pluginOptions});";
+       
+        $view->registerJs($js);
+ 
+        $js='function reloadimg(){ 
+        $("#'.$id.'_loadimg").show();
+        $("#'.$id.'_buttomimg").show();
+        $("#'.$id.'").hide();
+        ant = $("#'.$id.'_hidoldval").val();
+        $("#'.$idtext.'").val(ant);
+
+        }';
+        $view->registerJs($js);
+
+        $js='function openimg(){ 
+        $("#'.$id.'_loadimg").hide();
+        $("#'.$id.'_buttomimg").hide();
+        $("#'.$id.'").show();
+        }';
+        $view->registerJs($js);
+        
+        $js='function saveurl(){ 
+        str = $("#'.$id.'_hidurlid").val();
+        res = str.replace("..", ""); 
+        $("#'.$idtext.'").val(res);
+        }';
         $view->registerJs($js);
     }
 }

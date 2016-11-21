@@ -247,7 +247,6 @@ class UploadAction extends Action
         if (!$image->saveAs($this->tempPath . $image->name)) {
             return false;
         }
-
         $this->savedImage = $this->tempUrl . $image->name;
 
         return true;
