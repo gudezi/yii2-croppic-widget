@@ -18,50 +18,6 @@ use yii\base\InvalidConfigException;
 
 /**
  * Acción de clase para recortar imágenes.
- *
- * el uso de:
- *
- * public function behaviors()
- * {
- *     return [
- *         'verbs' => [
- *             'class' => VerbFilter::className(),
- *             'actions' => [
- *                 'crop' => ['post'],
- *             ],
- *         ],
- *     ];
- * }
- *
- * public function actions()
- * {
- *     return [
- *         'crop' => [
- *             'class' => 'gudezi\croppic\actions\CropAction',
- *             'path' => '@frontend/web/img/user/avatar',
- *             'url' => 'img/user/avatar/',
- *             'modelAttribute' => 'avatar',
- *             'modelScenario' => 'saveAvatar',
- *             'permissionRBAC' => 'updateProfile',
- *             'parameterRBAC' => 'profile',
- *         ],
- *     ];
- * }
- *
- * public function beforeAction($action)
- * {
- *     if ($action->id === 'upload' || $action->id === 'crop') {
- *         if ($action->hasProperty('model')) {
- *             $action->model = $this->findModel(Yii::$app->request->get('id'));
- *         }
- *     }
- *
- *     if (!parent::beforeAction($action)) {
- *         return false;
- *     }
- *
- *     return true;
- * }
  */
 class CropAction extends Action
 {
@@ -292,17 +248,14 @@ class CropAction extends Action
     {
         // Compruebe que la imagen existe
         // y puede ser leída.
-        //print_r(Yii::getAlias('@webroot/' . $model->imgUrl));die;
         $model->imgUrl = str_replace('../','',$model->imgUrl);
-        //$kk=str_replace('../','',Yii::getAlias('@webroot/' . $model->imgUrl));
         if (!is_readable(Yii::getAlias('@webroot/' . $model->imgUrl))) {
-        //if (!is_readable($kk)) {
             throw new InvalidCallException(
                 'La imagen no existe o no se puede leer.'
             );
         }
 
-        \yii\imagine\Image::$driver = [
+            \yii\imagine\Image::$driver = [
             \yii\imagine\Image::DRIVER_IMAGICK,
             \yii\imagine\Image::DRIVER_GMAGICK,
             \yii\imagine\Image::DRIVER_GD2,

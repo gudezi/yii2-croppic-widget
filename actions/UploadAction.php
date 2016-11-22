@@ -19,54 +19,6 @@ use yii\base\InvalidConfigException;
 
 /**
  * Acción de clase para cargar las imágenes.
- *
- * el uso de:
- *
- * public function behaviors()
- * {
- *     return [
- *         'verbs' => [
- *             'class' => VerbFilter::className(),
- *             'actions' => [
- *                 'upload' => ['post'],
- *             ],
- *         ],
- *     ];
- * }
- *
- * public function actions()
- * {
- *     return [
- *         'upload' => [
- *             'class' => 'gudezi\croppic\actions\UploadAction',
- *             'tempPath' => '@frontend/web/img/temp',
- *             'tempUrl' => 'img/temp/',
- *             'validatorOptions' => [
- *                 'checkExtensionByMimeType' => true,
- *                 'extensions' => 'jpeg, jpg, png',
- *                 'maxSize' => 3000000,
- *                 'tooBig' => 'Ha seleccionado una imagen demasiado grande (máx. 3 MB)',
- *             ]
- *             'permissionRBAC' => 'updateProfile',
- *             'parameterRBAC' => 'profile'
- *         ],
- *     ];
- * }
- *
- * public function beforeAction($action)
- * {
- *     if ($action->id === 'upload' || $action->id === 'crop') {
- *         if ($action->hasProperty('model')) {
- *             $action->model = $this->findModel(Yii::$app->request->get('id'));
- *         }
- *     }
- *
- *     if (!parent::beforeAction($action)) {
- *         return false;
- *     }
- *
- *     return true;
- * }
  */
 class UploadAction extends Action
 {

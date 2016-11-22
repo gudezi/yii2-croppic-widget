@@ -89,13 +89,13 @@ class Croppic extends InputWidget
 
         $idtext = $this->hasModel() ? Html::getInputId($this->model, $this->attribute) : $this->getId();
 
-        $this->pluginOptions['outputUrlId']=$id.'_hidurlid';
-        $this->pluginOptions['customUploadButtonId']=$id.'_openbutton';
+        $this->pluginOptions['outputUrlId'] = $id.'_hidurlid';
+        $this->pluginOptions['customUploadButtonId'] = $id.'_openbutton';
         
         $attribute = $this->attribute;
         $value=$this->model->$attribute;
-        $mipath='yiiBaseAdvanced/backend/web'; 
-        $loadimg='';
+        $pathroot = $this->options['pathroot'];; 
+        $loadimg = '';
 
         echo Html::Input('text', $nametext, $value, ['class' => 'form-control', 'id' => $idtext]);
         echo Html::Input('hidden', $id.'_hidoldval', $value, ['class' => 'form-control', 'id' => $id.'_hidoldval']);
@@ -103,7 +103,7 @@ class Croppic extends InputWidget
         
         if($value!='')
         {
-            echo '<div class="croppic" id="'.$id.'_loadimg" style="background-image: url(/'.$mipath.$value.');">';
+            echo '<div class="croppic" id="'.$id.'_loadimg" style="background-image: url(/'.$pathroot.$value.');">';
             echo '<div class="cropControls cropControlsUpload" id="'.$id.'_buttomimg" > <i class="cropControlUpload mibot" id="'.$id.'_openbutton"></i> </div>';
             echo '</div>';
         }
