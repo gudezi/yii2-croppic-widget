@@ -11,4 +11,8 @@
 
 - Actualizacion de la documentacion (gudezi)
 
+1.0.3
+
+- Usar el modelo para manipular los datos (gudezi)
+
 

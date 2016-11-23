@@ -15,7 +15,7 @@ Sólo tiene que ejecutar el comando en la consola:
 php composer.phar require --prefer-dist gudezi/yii2-croppic-widget "*"
 ```
 
-или добавьте
+o agregar
 
 ```json
 "gudezi/yii2-croppic-widget": "*"
@@ -52,7 +52,7 @@ En el formulario de la vista agregar:
         ['options' => $options,'pluginOptions' => $pluginOptions]); 
 ```
 
-## Crear un controlador para subitr y recortar una imagen 
+## Crear un controlador para subir y recortar una imagen 
 
 ```php
 namespace backend\controllers;
@@ -101,6 +101,105 @@ class UploadCropController extends Controller
             ],
         ];
     }
+}
+```
+
+Y para usar los datos del modelo 
+
+En el formulario de la vista agregar:
+
+```php
+    use gudezi\croppic\Croppic;
+
+    $options = [
+        'class' => 'croppic',
+        'pathroot' => 'yiiBaseAdvanced/backend/web',
+    ];
+    $pluginOptions= [
+        'uploadUrl' => '../upload-crop/upload?id='.$model->id,
+        'cropUrl' => '../upload-crop/crop?id='.$model->id,
+        'modal' => false,
+        'doubleZoomControls' => false,
+        'enableMousescroll' => true,
+        'loaderHtml' => '<div class="loader bubblingG">
+            <span id="bubblingG_1"></span>
+            <span id="bubblingG_2"></span>
+            <span id="bubblingG_3"></span>
+        </div> ',
+    ];
+    echo $form->field($model, 'urlUpload')->widget(Croppic::className(),
+        ['options' => $options,'pluginOptions' => $pluginOptions]); 
+```
+
+## Crear un controlador para subir y recortar una imagen 
+
+```php
+namespace backend\controllers;
+
+use Yii;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use gudezi\croppic\actions\CropAction;
+use gudezi\croppic\actions\UploadAction;
+
+use backend\models\Fotos;
+
+class UploadCropController extends Controller
+{
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'upload' => ['post','get'],
+                    'crop' => ['post'],
+                ],
+            ],
+        ];
+    }
+
+    public function actions()
+    {
+        $id = Yii::$app->request->get('id');
+        if($id>0)
+            $model = $this->findModel($id);
+        else
+            $model = new Fotos();
+        
+        return [
+            'upload' => [
+                'class' => 'gudezi\croppic\actions\UploadAction',
+                'tempPath' => '@backend/web/img/temp',
+                'tempUrl' => '../img/temp/',
+                'modelAttribute' => 'urlUpload',
+                'model' => $model,
+                'validatorOptions' => [
+                    'checkExtensionByMimeType' => true,
+                    'extensions' => 'jpeg, jpg, png',
+                    'maxSize' => 3000000,
+                    'tooBig' => 'Ha seleccionado una imagen demasiado grande (máx. 3 MB)',
+                ],
+            ],
+            'crop' => [
+                'class' => 'gudezi\croppic\actions\CropAction',
+                'path' => '@backend/web/img/user/avatar',
+                'url' => '../img/user/avatar/',
+                'modelAttribute' => 'urlUpload',
+                'model' => $model,
+            ],
+        ];
+    }
+    
+    protected function findModel($id)
+    {
+        if (($model = Fotos::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }    
 }
 ```
 

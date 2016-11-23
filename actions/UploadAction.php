@@ -53,6 +53,13 @@ class UploadAction extends Action
      */
     public $model;
     /**
+     * El atributo de nombre del modelo que se utilizará para
+     * Guardar o nombre de la ruta de la imagen en la base de datos.
+     *
+     * @var string
+     */
+    public $modelAttribute;
+    /**
      * La autorización de RBAC para los controles de acceso, por ejemplo 'updateProfile'.
      *
      * Ejemplo:
@@ -115,6 +122,11 @@ class UploadAction extends Action
         // Si se llena el atributo 'model'.
         if ($this->model !== null) {
             // Compruebe que es la instancia de clase "yii\base\Model".
+            
+            $Attribute = $this->modelAttribute;
+            if(isset($this->model->$Attribute))
+                $this->saveOriginImage($this->model->$Attribute);
+            
             if (!($this->model instanceof \yii\base\Model)) {
                 throw new InvalidConfigException(
                     'El atributo "model" no es una instancia de una clase "yii\base\Model".'
@@ -219,5 +231,19 @@ class UploadAction extends Action
         }
         // Eliminar la entrada de la sesión del usuario.
         Yii::$app->getSession()->remove('tempImage');
+    }
+    
+    /**
+     * Guarda temporalmente la imagen original.
+     *
+     * @method saveOriginImage
+     * @param  UploadedFile
+     */
+    private function saveOriginImage($image)
+    {
+        $origImage = Yii::getAlias('@webroot' . $image);
+        $desImage = $this->tempPath.'/'.basename($origImage);
+        if (is_file($origImage))
+            copy ($origImage, $desImage);
     }
 }
